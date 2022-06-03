@@ -1,0 +1,174 @@
+\section{Feature Family Processing} 
+\label{sec:featureFamilyProcessing}
+One of the basic concepts of our framework is the notion of a {\it feature
+  family}. Given an algorithm to define and extract features of
+interest corresponding to a parameter $p$, a feature family is a one-parameter
+family that for every possible parameter $p$ stores the corresponding set of
+features.
+While any feature definition can be used to create a feature family
+by exhaustively pre-computing all possible features for all possible parameters,
+many popular algorithms naturally produce nested sets of
+features for varying parameters. For example, clustering techniques progressively
+merge elements~\cite{Sheikh07,Comaniciu02} and a threshold-based segmentation creates
+increasingly larger regions~\cite{Bremer10tvcg}. In these examples all features can
+be described by a collection of base elements ({\it e.g.} clusters) or as a
+collection of differences between features at different parameters ({\it e.g.} regions
+above threshold $a$ that are below threshold $b$) respectively. 
+
+Feature families with a nested structure can be encoded and computed in an
+efficient manner. In our system, we specify for each {\it element} in the
+hierarchy its {\it life span} (in terms of the feature parameter), an arbitrary
+number of {\it children}, and a single {\it parent}. As is common with
+hierarchies, the set of {\it features} at a particular parameter $p$ is then
+defined as all elements that are {\it alive} at parameter $p$ combined with all
+their decendents. More formally we define:
+
+\begin{definition}[Element]
+  An \emph{element} $e$ is defined by a unique id and minimally contains a
+  parameter range $[p_{min},p_{max}]$, a direction, a collection of its children ids, and
+  the id of its parent:
+ $$e = \left(id,direction,[p_{min},p_{max}],\{child_0,\ldots ,child_n\},parent\right ) \in \Espace$$
+\end{definition}
+
+\begin{definition}[Feature]
+  A \emph{feature} $f$ is the union of an element $e$ and all its descendents
+$$f = \left\{e \cup children^n(e) | n \in \{1,2,...\}\right\}$$
+\end{definition}
+
+\noindent
+The element $id$ is simply a unique identifier that is typically stored implicitly,
+{\it e.g.} based on the order in which elements are stored in a file. The
+direction indicates whether the parent of an element is {\it born} at
+$p<p_{min}$ and consequently its children are born at $p > p_{max}$ or the
+opposite. 
+
+A feature family is a collection of features defined hierarchically as described above:
+
+\begin{definition}[Feature Family]
+  A \emph{feature family} $F$ is a set of features 
+  $$F = \{f_0,\ldots,f_m\} \subset \Fspace$$
+\end{definition}
+
+\noindent
+Finally, in a time-dependent simulation or an ensemble of simulations we have
+one feature family per time or ensemble member:
+
+\begin{definition}[Clan]
+  A \emph{clan} $C$ is an ordered set of feature families
+  $$C = \{F_0,\ldots, F_n\} \subset \Cspace$$
+\end{definition}
+
+\noindent
+We store feature families in a traditional multi-resolution graph that is
+updated on-the-fly as the user changes parameter. At any time we maintain a set
+of living elements that serve as the representatives for their corresponding
+features. Using the parent and child information this set is progressively
+updated as the feature parameter changes. Specifically, when an element dies it is
+removed from the set and either its children or its parent are born and added
+to the set. Furthermore, we support the encoding of multiple hierarchies
+associated with a feature family by storing multiple
+parameter ranges and child/parent ids in each feature, one for each
+hierarchy. In this particular case study we define feature families using merge trees 
+with either relevance- or threshold-based segmentations.
+
+\para{Merge Tree Based Feature Families}
+As discussed above, the features of interest are regions of locally high
+$\chi$. As shown in~\cite{Mascarenhas09,Bremer10tvcg} the {\it merge tree} is
+ideally suited to hierarchically encode such regions.  Given a simply connected
+domain $\Mspace$ and a function $g:\Mspace \rightarrow \Rspace$ the {\it level
+  set} $L(s)$ of $g$ at isovalue $s$ is defined as the collection of all points
+on $\Rspace$ with function value equal to $s$: $L(s) = \{p \in \Mspace | g(p) =
+s\}$. A connected component of a level set is called a {\it contour}. The merge
+tree of $g$ represents the merging of contours as the isovalue $s$ is swept
+top-to-bottom through the range of $g$, see Figure~\ref{fig:mergeTree}.  Each
+branch of the tree represents a family of contours that continuously evolve
+without merging as $s$ is lowered. These contours sweep out a subset of
+$\Mspace$ and thus the branches correspond to a segmentation of $\Mspace$, see
+Figure~\ref{fig:mergeTree}. To increase the resolution in parameter space we
+refine the merge tree by splitting long branches and refining the segmentation
+accordingly, see Figure~\ref{fig:mergeTreeSplit}.
+
+\begin{figure}[htbp]
+  \centering
+  \subfigure[]{\includegraphics[width=.49\columnwidth]{figures/mergeTree}\label{fig:mergeTree}}
+  \subfigure[]{\includegraphics[width=.49\columnwidth]{figures/mergeTree2}\label{fig:mergeTreeSplit}}
+  \caption{(a) Merge trees represent the merging of contours as a function is lowered through its range. 
+    Each branch represents a portion of the domain as indicated by the colors. (b) To increase the 
+      resolution in parameter space we refine the merge tree by splitting long branches and refining 
+      the segmentation accordingly.}
+\end{figure}
+
+In a simple threshold-based segmentation, each branch of the tree is an element
+with a lifetime given by the function values of the branch's top and bottom
+nodes. Given a particular threshold, each branch acts as the representative of
+its subtree/feature and, by construction, each subtree represents a simply
+connected region of high threshold, see Figure~\ref{fig:threshold}. However,
+when $g$ spans multiple orders of magnitude {\it relevance}~\cite{Mascarenhas09}
+is an alternate metric that scales $g$ at each node by its local maximum --
+the highest maximum in its corresponding subtree. The relevance lifetime of a
+branch is thus given by the relevance interval between its top and bottom node
+and ranges between $0$ and $1$, see Figure~\ref{fig:relevance}. We compute merge
+trees and their corresponding segmentation using the streaming algorithm
+proposed in~\cite{Bremer10tvcg}. The input is a collection of vertices with
+  function values, edges connecting them, and finalization information
+  indicating when a vertex is no longer used. As the algorithm processes vertices, it
+  maintains an active merge tree using a simple update procedure. By
+  aggressively removing portions of the tree whose vertices have been finalized, the algorithm is
+  fast while keeping a low memory footprint. In particular, the algorithm allows
+  for the pre-screening of vertices with function values outside of a range of
+  interest (in this case study very low $\chi$ values) and for the interleaving of file I/O with
+  computation. However, apart from memory and efficiency concerns any other
+  merge tree or contour tree algorithm could be used. For example, the publicly
+  available libtourtre library~\cite{libtourtre} provides the necessary
+  functionality. The output required by the downstream tools is a merge tree that for
+  each branch contains a list of domain vertices that belong to its corresponding 
+  contours. 
+
+
+\begin{figure}[htbp]
+  \centering
+  \subfigure[]{\includegraphics[width=.49\columnwidth]{figures/mergeTree3}\label{fig:threshold}}
+  \subfigure[]{\includegraphics[width=.49\columnwidth]{figures/mergeTree4}\label{fig:relevance}}
+  \caption{(a) A threshold based segmentation of a merge tree at a threshold
+    slightly above 80\% of the global maximum. (b) A relevance based segmentation at
+    relevance around slightly above 0.2 (slightly below 80\% of the local
+    maximum per branch). All local maxima are included and regions of
+    higher function value (red) span a larger range. }
+\end{figure}
+
+\para{Feature Attributes}
+In addition to the information necessary to encode a feature family we
+augment each feature with an arbitrary number, $k$, of additional
+attributes $(att^0,\ldots, att^k)$.  Our system currently supports
+various descriptive statistics such as minima, maxima, first through
+fourth order statistical moments and sums, as well as as shape
+descriptors such as volumes and various length-scales. Descriptive
+statistics are computed incrementally as the feature family is
+constructed, using the same update
+formulas~\cite{Bennett:Cluster09,pebay:08} employed for the
+interactive aggregation during data exploration
+(Section~\ref{sec:plot}). Specifically, as each vertex is labeld with
+its branch id, the vertex's associated attributes are added to the
+corresponding statistical aggregator.  While this incremental approach
+works well for descriptive statistics, certain attributes such as
+shape descriptors cannot easily be computed in this manner, and are
+thus computed in a post-processing step.  As discussed above, each
+element stores a list of corresponding vertices making it straight
+forward to assemble all vertices of a feature. Given this set of
+vertices we estimate the first three length-scales (length, width, and
+thickness) using a spectral technique similar to the one introduced
+by~\cite{Reuter09}. First, we compute a boundary surface of the vertex
+set as an iso-surface of a binary segmented volume. We then
+parametrize this shape according to its first non-trivial eigenvector
+to compute its length (Figure~\ref{fig:thickness}(a)). Subsequently,
+we extract iso-contours of this parametrization and apply the same
+technique recusively to compute the width
+(Figure~\ref{fig:thickness}(b)) and once again for the thickness
+(Figure~\ref{fig:thickness}(c)). While we typically compute
+descriptive statistics during merge tree construction, they could also
+be computed as a post-process given the list of vertices and their
+attributes. Doing so would allow the use of traditional, multi-pass
+algorithms, but would require all attributes to be accessible during
+the post-process, resulting in additional file I/O.
+
+

@@ -1,0 +1,33 @@
+FIND_LIBRARY(GSLCBLAS_LIBRARY gslcblas)
+
+FIND_LIBRARY(GSL_LIBRARY gsl)
+
+
+FIND_PATH(GSL_INCLUDE gsl_linalg.h 
+	/usr/local/include/gsl
+	~/local/include/gsl
+)
+
+
+INCLUDE_DIRECTORIES(
+   ${STATISTICS_SRC}
+   ${TOPOLOGY_FILE_PARSER_INCLUDE_DIR}
+   ${GSL_INCLUDE}
+   ./
+)
+
+SET(LINK_LIBRARIES
+    Statistics
+    ${TOPOLOGY_FILE_PARSER_LIBRARIES}
+    ${GSLCBLAS_LIBRARY}
+    ${GSL_LIBRARY}
+)
+
+ADD_EXECUTABLE(generateObservations  generateObservations.cpp SegmentedGrid.cpp)   
+TARGET_LINK_LIBRARIES(generateObservations ${LINK_LIBRARIES})
+
+INSTALL(TARGETS  generateObservations
+        ARCHIVE DESTINATION ${PROJECT_LIBRARY_DIR}
+        LIBRARY DESTINATION ${PROJECT_LIBRARY_DIR}
+        RUNTIME DESTINATION ${PROJECT_EXE_DIR}/utilities
+)

@@ -1,0 +1,38 @@
+\section{Introduction} \label{sec:introduction}
+Topological analysis methods can be applied on scientific data to generate
+multi-resolution hierarchies that encode features of interest in the data.
+The analysis methods discretize the domain into sets of features 
+which we denote feature families, that can be split and merged according to
+an importance measure.  In general, analysis methods based on Reeb graphs 
+and their variants, or the Morse Smale (MS) complex generate similar outputs: 
+a segmentation of the input domain and a one-parameter simplification sequence 
+for coarsening or refining the segmentation.  The Reeb graph segments the domain 
+based on the evolution of the level sets of a function $f$, while the Morse Smale 
+complex segments the domain based on the gradient flow of $f$.  The simplification 
+sequence can be driven by (1) traditional persistence, where the importance of a 
+feature is defined as the difference in function value between its birth and 
+death or (2) threshold based simplification, where all features above or below 
+a particular threshold are disregarded.
+
+Scientific data is increasingly high-dimensional with scientists tracking large
+numbers of field attributes within their simulations and experiments.  Most
+topological analysis techniques segment the data according to one of these
+field attributes.  In an effort to expand the general applicability of 
+toplogical analysis tools, we are creating a unified semantic framework based on
+the notion of feature families that (1) allows for in depth analysis of the 
+remaining field parameters within and across segmented features, (2) facilitates 
+the development of downstream analysis tools, and (3) compresses
+the data to be stored, while maintaining the information that is necessary for 
+additional analyses downstream.  We are developig a topological file format that 
+provides a general interface to topological codes by storing information on each 
+feature, namely a unique id, a list of domain elements that comprise the feature, 
+a list of feature properties (size, mean function values, etc.), and persistence
+information to encode birth, death, and merge events.
+
+This document describes our efforts to develop this framework and is outlined as 
+follows:  the notion of feature family processing is discussed in section 
+\ref{sec:featureFamilyProcessing} and the  topology file format is presented in 
+section \ref{sec:topologyFileFormat}.  Details for installing and using existing 
+downstream tools are included in sections \ref{sec:installation} and \ref{sec:usage} 
+respectively.
+

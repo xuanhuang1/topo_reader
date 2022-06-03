@@ -1,0 +1,162 @@
+\section{Background}
+\label{sec:background}
+
+Morse theory is one way to study the topology of scalar fields.
+For a survey of other applications of topology to data analysis, see
+Carlsson~\cite{car09}.
+
+\paragraph{Notation}
+Morse theory analyzes the topology of a manifold  $\mathbb{M}$ by studying
+differentiable generic functions defined on $\mathbb{M}$
+\cite{Milnor:Morse,Matsumoto:Morse}.  Let $\mathbb{M}$ be a smooth, compact
+$d$-manifold without boundary and let $f:\mathbb{M}\rightarrow \mathbb{R}$
+denote a smooth real-valued function on $\mathbb{M}$.  Assuming a local
+coordinate system at a point $x\in\mathbb{M}$, the \emph{gradient} $\nabla
+f(x)$ consists of all partial derivatives and the \emph{Hessian} is the matrix
+of second-order partial derivatives of $f$.  A point $x\in\mathbb{M}$ is
+\emph{critical} when $\nabla f(x)=0$; its value $f(x)$ is a \emph{critical
+value}.  Non-critical points and non-critical values are called \emph{regular
+points} and \emph{regular values}, respectively.  A level set $f^{-1}(s)$ is
+the preimage of a real value $s\in\mathbb{R}$.  If $s$ is regular then 
+$f^{-1}(s)$ is a $(d-1)$-manifold.  If $s$ is critical then $f^{-1}(s)$ 
+is non-manifold and is called a \emph{critical level set}. 
+A critical point with a non-singular Hessian is \emph{non-degenerate}.  
+The Morse Lemma states that in the neighborhood of a
+non-degenerate critical point $x$, a local coordinate system can be constructed
+such that $f(x_0,\ldots, x_n) = f(x) \pm x_0^2 \pm \ldots \pm x_n^2$.  Critical
+points are categorized by their \emph{index} which is equal to the number of
+minus signs in this equation.  
+
+A function $f$ is \emph{Morse} if it satisfies the two genericity conditions:
+1. all critical points are non-degenerate; and 2. $f(x) \ne f(y)$ whenever $x \ne y$ are critical.
+The critical points of a Morse function and their indices capture information
+regarding the manifold on which the function is defined. For example, the Euler
+characteristic of the manifold $\mathbb{M}$ equals the alternating sum of critical
+points, $\chi(\mathbb{M}) = \sum_x(-1)^{\mathrm{index}\,x}$.
+
+\begin{figure}[ht]
+  \center
+  \includegraphics[width=3in]{jpeg/critical.jpg} 
+  \caption{Critical points in 1, 2, and 3 dimensions.}
+  \label{fig:critical}
+\end{figure}
+
+A \emph{triangulation} of a manifold $\mathbb{M}$ is a simplicial complex, $K$, 
+whose underlying space is homeomorphic to $\mathbb{M}$~\cite{Alexandrov:Topology}.  
+A piecewise linear (PL) function $f$ on $K$ is defined by a set of scalar values
+at the vertices that are extended over the simplices of
+$K$ via linear interpolation. The function $f$ is assumed to be
+non-degenerate and Simulation of Simplicity \cite{Edelsbrunner:SOS} guarantees 
+this through symbolic perturbation.
+The local structure of $K$ at a vertex is described in terms 
+of its \emph{star} and \emph{link}.  The
+star of a vertex $u$ consists of all simplices that share $u$, including $u$
+itself: $\mathrm{St}\,u  =  \{\sigma \in K \mid u \subseteq \sigma\}$.
+The link consists of all faces of simplices in the star that are
+disjoint from $u$: $\mathrm{Lk}\,u  =  \{\tau \in K \mid \tau \subseteq \sigma \in
+                          \mathrm{St}\,u, u \notin \tau \}$
+The lower link is the subset of the link induced by vertices
+with function value less than $u$: 
+  $\mathrm{Lk}\_\,u  =  \{\tau \in \mathrm{Lk}\,u \mid v \in \tau \Rightarrow
+                          f(v) \leq f(u) \} $.
+
+Critical points of piecewise linear functions are classified according to
+the reduced Betti numbers \cite{Munkres:Topology} of the lower link, see figure 
+\ref{fig:critical}.  
+%The k-th reduced Betti number, denoted as $\rBetti_k$,
+%is the rank of the k-th reduced homology group of the lower link: $\rBetti_k =
+%\mathrm{rank}\,\tilde{\mathsf{H}}_k$. The reduced Betti numbers are the same as
+%the usual (un-reduced) Betti numbers, except that $\rBetti_0 = \Betti_0 - 1$
+%for non-empty lower links, and $\rBetti_{-1} = 1$ for empty lower
+%links~\cite{Munkres:Topology}. When the link is a 2-sphere only $\rBetti_{-1}$ through
+%$\rBetti_2$ can be non-zero. Simple critical points have exactly one non-zero
+%reduced Betti number, which is equal to unity.
+%; see Table~\ref{tab:critClass}.
+%\begin{table}[ht]
+%\centering
+%\begin{tabular}{c || cccc}
+% & $\rBetti_{-1}$ & $\rBetti_0$ & $\rBetti_1$ & $\rBetti_2$ \\\hline\hline
+%regular  & 0 & 0 & 0 & 0\\\hline
+%minimum  & 1 & 0 & 0 & 0\\
+%1-saddle & 0 & 1 & 0 & 0\\
+%2-saddle & 0 & 0 & 1 & 0\\
+%maximum  & 0 & 0 & 0 & 1
+%\end{tabular}
+%\caption{Classification of vertices into regular and simple critical points
+%using the reduced Betti numbers of the lower link.}
+%\label{tab:critClass}
+%\end{table}
+Critical points are assumed to be features in the data and are ranked in
+importance by \emph{persistence}. Using persistence, a hierarchical
+representation of the data is created in which low persistent features are
+identified as noise.  Traditional persistence
+\cite{Edelsbrunner:TopoPersistence} is defined as the difference in function
+value between pairs of critical points.  
+
+\begin{figure}[ht]
+  \center
+  \includegraphics[width=2.5in]{jpeg/reeb.jpg} 
+  \caption{Left: a height function defined on a 2-D plane, Right: the corresponding merge tree.}
+  \label{fig:reeb}
+\end{figure}
+
+
+\paragraph{Mathematical Constructs}
+The \emph{Reeb graph} of $f$ is defined by continuously contracting
+each contour into a single point.  The Reeb graph consists of a series of nodes
+connected by arcs. The nodes correspond to critical points of $f$ on
+$\mathbb{M}$, and the arcs correspond to connected components of $\mathbb{M}$, see
+figure \ref{fig:reeb}.
+In the case of simply connected domains, the Reeb graph has no cycles and is
+called a \emph{contour tree}.
+Reeb graphs, contour trees, and their variants have been used successfully to guide the
+removal of topological features \cite{Cignoni:Simplification, Bremer:Hierarchy, Guskov:NoiseRemoval,
+ Carr:Contour, Wood:ExcessTopo}.  In \cite{Mascarenhas:Combustion} contour trees are used to
+extract features of interest in large-scale turbulent combustion.
+%The work of \cite{Weber:Landscapes} facilitates the understanding of complex scientific information by proposing 
+%a terrain metaphor to present the topological information provided by contour trees.
+
+\begin{figure}[ht]
+  \center
+  \includegraphics[width=5in]{jpeg/morse.jpg} 
+  \caption{Left: ascending manifold, Center: descending manifold, Right: MS complex.}
+  \label{fig:morse}
+\end{figure}
+
+Manifolds can be partitioned according to the behavior of the gradient of $f$ 
+rather than the behavior of the level sets of $f$.
+An \emph{integral line} is a maximal path on $\mathbb{M}$  whose tangent 
+vectors agree with the gradient of $f$.  
+A \emph{descending/ascending manifold} of a critical point $u$ is the union of $u$ with 
+all integral lines that end/start at $u$.  
+The \emph{Morse complex} of $\mathbb{M}$ partitions $\mathbb{M}$
+into a set of \emph{descending manifolds}.
+The \emph{Morse-Smale complex} (MS complex) is an overlay of ascending and descending 
+manifolds which decomposes a scalar field into regions of 
+uniform gradient flow behavior, see figure \ref{fig:morse}.  
+The MS complex is used in the work of \cite{Laney:TurbulentMixing} 
+to analyze Rayleigh-Taylor instabilities by extracting a hierarchical segmentation of the mixing 
+envelope surface.  In \cite{Natarajan:Molecules}  molecular surfaces are segmented using the 
+MS complex to study semi-rigid structures and the role of cavities and protrusions in protein-protein interactions.
+In \cite{Gyulassy:2007:TCD} the MS complex is used to analyze stable channel structures from an atomistic
+simulation of a porous solid under impact with a high density projectile. 
+
+
+
+%The \emph{Jacobi set}, $\mathbb{J}$ of two Morse functions $f, g$ defined on a common $d$-manifold is 
+%the set of critical points of the restrictions of one function to the level 
+%sets of the other function. Equivalently, it is the set of points where the 
+%gradients of the functions are parallel. Formally,
+%$\mathbb{J} = \{ x \in \mathbb{M}\;|\;\nabla f(x) + \lambda\nabla g(x) = 0
+%\;\mathbf{or}\;\lambda\nabla f(x) + \nabla g(x) = 0 \}$.
+%Jacobi sets are used to describe the path followed by the critical points
+%of a time varying function over time, as in \cite{Gyulassy:2007:TCD}, where
+%Jacobi sets are used to track channels in a porous solid. 
+%In \cite{Edelsbrunner:Func} Jacobi sets are used to study electrostatic potentials of protein
+%complexes. 
+%For a time-varying function $f:\mathbb{M}\times\mathbb{R}\rightarrow\mathbb{R}$, where
+%the last dimension is time, we can introduce an auxiliary function
+%$g:\mathbb{M}\times\mathbb{R}\rightarrow\mathbb{R}$ defined as $g(x, t) = t$.  Consider
+%the level set $g^{-1}(t) = \mathbb{M}\times t$. The restriction of $f$ to this
+%level set is a snapshot of $f$ at time $t$. It follows from the definition that the
+

@@ -1,0 +1,7 @@
+TEST_CONFIG(USE_OPENMP TRUE BOOL "Use OpenMP")
+
+TEST_CONFIG(ENABLE_GUI FALSE BOOL "Compile the fltk-1.10 gui")
+
+TEST_CONFIG(ENABLE_OBSERVATION FALSE BOOL "Enabled the obseravation test code")
+
+TEST_CONFIG(ENABLE_VTK FALSE BOOL "Enable VTK modules")

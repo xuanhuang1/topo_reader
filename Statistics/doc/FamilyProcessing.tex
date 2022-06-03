@@ -1,0 +1,242 @@
+\documentclass[journal]{vgtc}         % review (journal style)
+
+\usepackage{mathptmx}
+\usepackage{graphicx}
+\usepackage{times}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+
+\def\Rspace{\mathbb{R}} % ptb
+\def\Aspace{\mathbb{A}} % ptb
+\def\Nspace{\mathbb{N}} % ptb
+\def\Mspace{\mathbb{M}} % ptb
+\def\Fspace{\mathbb{F}} % ptb
+\def\Cspace{\mathcal{F}} % ptb
+\def\Pset{\mathcal{P}} % ptb
+
+
+
+\newtheorem{definition}{Definition}
+
+\title{Feature Family Processing}
+
+\abstract{ This document describes some general thoughts and design decision
+  relavant to the fast processing of feature families. For now we asssume we are
+  interested in processing a {\it clan} of one-parameter feature families
+  computed from a number of time steps of a simulation. We will describe the
+  general concepts, define the necessary operators and discuss their
+  implementation wrt. the latest data structures.  }
+
+
+\begin{document}
+
+\firstsection{Generic Concepts}
+\maketitle
+
+First, we describe the processing pipeline and it elements in a generic way
+independent of implementation issues.
+
+\subsection{Definitions}
+
+The source data we are working on is a {\it clan}, $C=\{F_0,....., F_n\}$, of
+{\it feature families} $F_i$ for time steps $t=\{0,...,n\}$. Each feature family
+is dependent on {\it parameters} $p^1,...,p^m$ to define a set of {\it
+  features}, $\{f_0^i,...,f_{n_i}^i\}$. We call the space of feature families
+$\Cspace$ and the space of possible features $\Fspace$.
+
+\begin{definition}[Clan]
+  A \emph{clan} $C$ is an ordered set of feature families
+  
+  $$C = \{F_0,....., F_n\} \subset \Cspace$$
+\end{definition}
+
+\begin{definition}[Feature Family]
+  A \emph{feature family} $F$ is a set of features 
+
+  $$F = \{f_0,....,f_m\} \subset \Fspace$$
+
+\end{definition}
+
+\begin{definition}[Feature]
+  A \emph{feature} $f$ is a collection of parameter ranges $[p_{min},p_{max}]$
+  together with a set of statistics $\{stat^0,...stat^k\}$:
+
+  $$f =
+ \left(\left\{[p_{min}^1,p_{max}^1],...,[p_{min}^m,p_{max}^m]\right\},\left\{stat_0,...stat_k\right\}\right)
+ \in \Fspace$$
+\end{definition}
+
+
+\subsection{Operators}
+
+There are four types of operators mapping families, sets of features, and
+statistics into new sets of features, sets of scalars, or numbers.
+
+\begin{definition}[Selection]
+  
+  A \emph{selection} $S: \Cspace \times \Rspace^m \rightarrow \Pset(\Fspace)$
+  is a function that maps a feature family and a list of parameters to a set of
+  features. 
+
+\end{definition}
+
+\begin{definition}[Subselection]
+
+  A \emph{subselection} $U: \Pset(\Fspace) \times \{0,...,k\} \times \Rspace^2
+  \rightarrow \Pset(\Fspace)$ is a function that for a set of features and an
+  index to a statistics returns a set containing only those features for which
+  the statistic value lies within the given interval.
+
+\end{definition}
+
+\begin{definition}[Accumulation]
+
+  An \emph{accumulation} $A: \Pset(\Fspace) \times \{0,...,k\} \rightarrow
+  \Pset(\Rspace)$ is a function that for a set of features and a statistics
+  index return the set of corresponding statistics.
+
+\end{definition}
+
+\begin{definition}[Reduction]
+
+  A \emph{reduction} $R: \Pset(\Rspace) \rightarrow \Rspace$ is a function that
+  maps a set of scalar values to a single scalar value, for examaple by
+  computing the mean.
+
+\end{definition}
+
+\section{Graph Types}
+
+We want to use the definitions and operators decsribed above to create three
+different types of plots: Species distributions; Parameter graphs; and Time
+plots. Here we will briefly describe each type and indicate how they could be
+implemented with the operators given above. For simplicity of presentation we
+assume that all functions operate on the entire clan even though in practice one
+could easily restrict it to a temporal subset
+
+\subsection{Species Distributions}
+
+These are graphs such as histographs, cummulative density functions (CDFs), or
+weighted CDFs collecting information of all features for a given choice of
+parameters and subselections
+
+\paragraph{Inputs:} 
+\begin{enumerate}
+\item A fetaure clan $C$;
+\item A list of parameters $P = (p^0,...,p^m)$; 
+\item A set of subselections $Q$ = $\{(stat_{min}^{i_0},stat_{max}^{i_0}), ... ,
+  (stat_{min}^{i_l},stat_{max}^{i_l})\}$ with $l \le k$; and
+\item A statistic index $i$
+\end{enumerate}
+
+\paragraph{Algorithm:}
+\begin{tabbing}
+\=\hspace{0.2in}\=\hspace{0.2in}\=\hspace{0.2in}\=\hspace{0.2in}\=\\
+\>{\sc SpeciesDistribution}($C$,$P$,$Q$,$i$ ) \\
+\>\>$Output = \emptyset$\\
+\>\>for $F \in C$\\
+\>\>\>$X$ = $S(F,P)$\\
+\>\>\>for $j \in \{i_0,...,i_l\}$\\
+\>\>\>\>$X$ = $U(X,j,(stat_{min}^{j},stat_{max}^{j}))$\\
+\>\>\>$Output$ = $Output \cup A(X,i)$\\ 
+\>\>{\sc Sort}($Output$)
+\end{tabbing}
+
+
+\paragraph{Discussion:}
+
+The first selection step should be fast and is unavoidable. Similarly, the last
+accumulation to return the final values to display is unavoidable. The expensive
+portion of this algorithm is the middle portion where additional accumulations
+must be performed for each subselection. In practice, it might be faster to
+first compute all statistics used in the subselection at once (potentially even
+together with the final one) and reduce the set based on these values
+
+
+\subsection{Parameter Graphs}
+
+These are graphs that show how a quantity of interest changes as one parameter
+is varied. The most common example is a plot of average number of features per
+family per parameter.
+
+\paragraph{Input}
+\begin{enumerate}
+\item A fetaure clan $C$;
+\item A list of parameters $P = (p^0,...,p^{j-1},p^{j+1},...,p^m)$; 
+\item A list of values for the parameter of interest $V = (p^j_0,...,p^j_h)$;
+\item A set of subselections $Q$ = $\{(stat_{min}^{i_0},stat_{max}^{i_0}), ... ,
+  (stat_{min}^{i_l},stat_{max}^{i_l})\}$ with $l \le k$; 
+\item A statistics index $i$;
+\item A family wide reduction $R_f$; and
+\item A clan wide reduction $R_c$.
+\end{enumerate}
+
+\paragraph{Algorithm:}
+\begin{tabbing}
+\=\hspace{0.2in}\=\hspace{0.2in}\=\hspace{0.2in}\=\hspace{0.2in}\=\\
+\>{\sc ParameterGraph}($C$,$P$,$V$,$Q$,$i$,$R_f$,$R_c$ ) \\
+\>\>$Output = \{\emptyset,...,\emptyset\}$\\
+\>\>for $F \in C$\\
+\>\>\>for $p \in V$\\
+\>\>\>\>$X$ = $S(F,P\cup p)$\\
+\>\>\>\>for $j \in \{i_0,...,i_l\}$\\
+\>\>\>\>\>$X$ = $U(X,j,(stat_{min}^{j},stat_{max}^{j}))$\\
+\>\>\>\>$Output[p] = Output[p] \cup R_f(A(X,i))$\\
+\>\>for $o \in Output$\\
+\>\>\>$o = R_c(o)$
+\end{tabbing}
+
+\paragraph{Discussion}
+
+This is an even more expensive algorithm since you have to adapt the statistics
+for each $p$-value independently.
+
+
+\subsection{Time Plots}
+
+A time plot as the name suggests shows the evolution of a scalar quantity. Since
+time corresponds to the order of feature families this is fairly straight
+forward.
+
+\paragraph{Input:}
+
+\begin{enumerate}
+\item A fetaure clan $C$;
+\item A list of parameters $P = (p^0,...,p^m)$; 
+\item A set of subselections $Q$ = $\{(stat_{min}^{i_0},stat_{max}^{i_0}), ... ,
+  (stat_{min}^{i_l},stat_{max}^{i_l})\}$ with $l \le k$; 
+\item A statistics index $i$; and
+\item A family wide reduction $R_f$; 
+\end{enumerate}
+
+
+\paragraph{Algorithm:}
+\begin{tabbing}
+\=\hspace{0.2in}\=\hspace{0.2in}\=\hspace{0.2in}\=\hspace{0.2in}\=\\
+\>{\sc ParameterGraph}($C$,$P$,$V$,$Q$,$i$,$R_f$,$R_c$ ) \\
+\>\>$Output = [0,...,0]$\\
+\>\>for $F \in C$\\
+\>\>\>$X$ = $S(F,P)$\\
+\>\>\>for $j \in \{i_0,...,i_l\}$\\
+\>\>\>\>$X$ = $U(X,j,(stat_{min}^{j},stat_{max}^{j}))$\\
+\>\>\>$Output[F] = R_f(A(X,i))$\\
+\end{tabbing}
+
+\paragraph{Discussion}
+
+This is a simpler version of the parameter graph. 
+
+
+\section{Practical Implementation}
+
+Some thoughts on the curent implementation:
+
+\begin{itemize}
+\item The selection function is a state rather than a true function. This makes
+  updating the selection for successive parameters cheap
+\item It would be useful to iterate through the constituents of any feature
+\item If the statistics must be computed we might be better off computing all of
+  them in one traversal rather than successively downselect.
+\end{itemize}
+
+\end{document}

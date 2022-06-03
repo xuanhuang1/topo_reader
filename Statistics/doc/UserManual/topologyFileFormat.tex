@@ -1,0 +1,60 @@
+\section{Topology File Format} \label{sec:topologyFileFormat} 
+Up to three files per timestep comprise the topology file format:
+
+\begin{enumerate}
+\item {\bf Family Files:} contain a list of features, their lifetime information and feature properties.
+\item {\bf Segmentation Files:} contain a list of domain elements for each feature.
+\item {\bf Map Files:} $\left<optional\right>$ contains a list of indices into a global index map.  
+\end{enumerate}
+
+\paragraph{Family Files}
+Family files encode the feature hierarchy and store attributes associated with the features.  
+Because the number of attributes stored is arbitrary, there is an XML-like footer that contains 
+the information necessary to parse the file, see for example figure \ref{fig:footer}.  The footer
+contains handles pointing to the simplification hierarchy in the file, as well as details on
+and pointers to each of the statistcal attributes.  The following statistics 
+are currently supported: vertex count, function min, function max, integrated function value, and descriptive statistics 
+(first through fourth order moments).  We are in the process of adding support for contingency statistics, which includes
+point-wise mutual information and information entropy.  
+
+Statistical attributes can be stored pre-accumulated or on a per feature basis.  
+When statistics are stored on a per feature basis, the topological analysis codes have 
+aggregated the statistics for each feature individually and written the results to file.  
+The topological analysis codes can also pre-accumulate statistics accordig to the simplification 
+sequence, greatly accelerating post-processing analyses in downstream tools.  When pre-accumulated 
+statistics have been written to the file, the aggregated option is set to yes in 
+the Statistic XML handle.  
+
+\begin{figure}[ht]
+\tiny{
+\begin{verbatim}
+<Clan offset="2033857" globalsize="4" localsize="4" precision="float" major="1" minor="0">
+  <Family offset="0" range="1.0000021756e-01 1.9924249649e+01">
+      <Simplification offset="0" encoding="ascii" elementcount="16422" metric="High Threshold" filetype="0" range="1.0000021756e-01 1.9924249649e+01"/>
+      <Statistic offset="445056" encoding="ascii" elementcount="16422" mapping="direct" aggregated="yes" attribute="temp" statistic="vertexCount"/>
+      <Statistic offset="486845" encoding="ascii" elementcount="16422" mapping="direct" aggregated="yes" attribute="H2_ConsumptionRate" statistic="mean"/>
+      <Statistic offset="678906" encoding="ascii" elementcount="16422" mapping="direct" aggregated="yes" attribute="H2_ConsumptionRate" statistic="min"/>
+      <Statistic offset="835438" encoding="ascii" elementcount="16422" mapping="direct" aggregated="yes" attribute="H2_ConsumptionRate" statistic="max"/>
+      <Statistic offset="993375" encoding="ascii" elementcount="16422" mapping="direct" aggregated="yes" attribute="temp" statistic="mean"/>
+      <Statistic offset="1185414" encoding="ascii" elementcount="16422" mapping="direct" aggregated="yes" attribute="temp" statistic="min"/>
+      <Statistic offset="1341916" encoding="ascii" elementcount="16422" mapping="direct" aggregated="yes" attribute="X(OH)" statistic="mean"/>
+      <Statistic offset="1578987" encoding="ascii" elementcount="16422" mapping="direct" aggregated="yes" attribute="x" statistic="mean"/>
+      <Statistic offset="1729844" encoding="ascii" elementcount="16422" mapping="direct" aggregated="yes" attribute="y" statistic="mean"/>
+      <Statistic offset="1880301" encoding="ascii" elementcount="16422" mapping="direct" aggregated="yes" attribute="z" statistic="mean"/>
+  </Family>
+</Clan>
+\end{verbatim}
+}
+\label{fig:footer}
+\caption{Sample XML footer for a family file.}
+\end{figure}
+
+
+\paragraph{Segmentation Files}
+Segmentation files are typically binary files that contain a list of domain elements associated with each feature.  
+The file is written as a flat array of one index per element, with the index corresponding to its feature id.
+
+\paragraph{Map Files}
+Map files are optional files that are typically binary. The file is written as a flat array of one index per 
+element indicating the index of this element with respect to a virtual index space.
+

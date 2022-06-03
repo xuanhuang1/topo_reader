@@ -1,0 +1,87 @@
+\documentclass[]{article}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{graphics}
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{graphics}
+\usepackage{color}
+\usepackage{subfigure}
+\usepackage{wrapfig}
+
+\title{Algorithm Notes for Merge Tree Computation}
+\author{Peer-Timo Bremer}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Merging of Multiple Merge Trees}
+
+{\bf Assumption:}
+\begin{itemize}
+\item The merger can determine whether an incoming node is on the boundary
+\item The merger can determine how many instances of a node will arrive
+  (assuming correct computation upstream)
+\end{itemize}
+
+\noindent
+{\bf Input:} 
+\begin{itemize}
+\item $k$ streams of nodes, arcs, and finalization information describing $k$ merge trees
+\item The streams are asynchronous and not guaranteed to be in any order even
+  though practically speaking they will be somewhat sorted
+\end{itemize}
+
+\noindent
+{\bf Algorithm:}
+\begin{enumerate}
+\item Parse the input string to
+  \begin{enumerate}
+  \item[(a)] Delay finalization information until all instances of a vertex have
+    been seen
+  \item[(b)] Mark boundary nodes
+    \item[(c)] Store the incoming arcs as node pairs
+  \end{enumerate}
+\item Compute combined tree using the enhanced streaming algorithm (sorted branch
+  decomposition). The algorithm produces a stream of nodes, arcs, and
+  finalization information building the resulting tree.
+\item Store the resulting tree locally 
+\item Each time an arc is finalized determine wether it remains part of the
+  boundary is so output it to the next layer, if not do nothing
+\item For all original arcs take the stored combined tree and 
+  \begin{enumerate}
+  \item[(a)] If the top node is no longer critical determine with which arc it merged and
+    store it
+  \item[(b)] If the top node is still critcal then either its old bottom node is
+    still its representative or a split has taken place. Store all the splits
+    above the old bottom node and their function values. 
+  \end{enumerate}
+\item Send of the delta changes to the respective incoming compute nodes
+\end{enumerate}
+
+\noindent
+{\bf Thoughts and Comments:}
+\begin{itemize}
+\item If each local merge node stores its final tree than it can figure out a
+  delta encoding between its final tree and the final tree after the next
+  level. 
+\item The above technique will lead to a cascading communication pattern in
+  which each round of merging kicks of more communication
+\item Furthermore, we will send potentially much smaller messages but we'll send
+  more of them 
+\item How do we best store a tree to allow fast delta encoding (which is the
+  same operation as fixing the segmentation). Do we care ? We could do all
+  merges (simple lookup whether a node exists) and then all splits in more or
+  less optimal time ?
+\end{itemize}
+
+\noindent
+{\bf Alternatives:}
+\begin{itemize}
+\item Send of the resulting tree instead of the delta information
+\item Send either the delta or the resulting tree directly to the corresponding
+  leafs
+\end{itemize}
+
+\end{document}

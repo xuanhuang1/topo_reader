@@ -1,0 +1,99 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0110 
+header_name {.h} 
+code_name {.cpp}
+class plotViewerUI {open
+} {
+  Function {plotViewerUI(const char *datafile, bool useExistingOptFile, const char *optfile, bool useThreshold, float threshold)} {open
+  } {
+    Fl_Window mainWin {open
+      xywh {902 129 772 767} type Double color 38 resizable
+      code0 {o->label(datafile);} visible
+    } {
+      Fl_Box plotWin {
+        xywh {0 0 760 540} align 2
+        code0 {\#include "plotWindow.h"}
+        code3 {o->mode(FL_DOUBLE|FL_ALPHA|FL_RGB|FL_DEPTH);}
+        class plotWindow
+      }
+      Fl_Group Controls {open
+        xywh {5 538 758 222} box UP_BOX color 37 align 17
+      } {
+        Fl_Text_Display selectedSegmentText {
+          label {Information for selected feature} selected
+          xywh {19 673 324 80} hide
+        }
+        Fl_Group stateBehavior {
+          label {State Behavior} open
+          xywh {559 561 190 90} box DOWN_BOX color 41
+        } {
+          Fl_Round_Button updateStateManually {
+            label {Update State Manually}
+            callback {plotWin->setUpdateStateManually((bool) updateStateManually->value());
+if(updateStateManually->value()) {
+  updateState->activate();
+} else {
+  updateState->deactivate();
+}}
+            xywh {569 608 105 20} down_box ROUND_DOWN_BOX
+          }
+          Fl_Button updateState {
+            label {Update State}
+            callback {plotWin->updateState();
+plotWin->damage(1);}
+            xywh {579 574 150 30} color 44 deactivate
+          }
+        }
+        Fl_Group subselection {
+          label Subselection open
+          xywh {357 561 188 90} box DOWN_BOX color 41
+        } {
+          Fl_Button clearAllSelections {
+            label {Clear All Selections}
+            callback {plotWin->clearAllSelections();
+plotWin->damage(1);}
+            xywh {373 590 150 30} color 44
+          }
+        }
+        Fl_Group plotting {
+          label Plotting open
+          xywh {18 561 325 114} box DOWN_BOX color 41
+        } {
+          Fl_Button saveActivePlot {
+            label {Save active plot}
+            callback {plotWin->saveActivePlot();
+plotWin->damage(1);}
+            xywh {29 575 150 30} color 44
+          }
+          Fl_Button clearSavedPlots {
+            label {Clear saved plots}
+            callback {plotWin->clearSavedPlots();
+plotWin->damage(1);}
+            xywh {179 575 150 30} color 44
+          }
+          Fl_Button savePlotsToPLT {
+            label {Save plots to .plt}
+            callback {std::string fName = std::string(filename->value());
+plotWin->savePlotsToPLT(fName);}
+            xywh {29 605 150 30} color 44
+          }
+          Fl_Input filename {
+            label filename
+            xywh {179 604 150 30} labeltype ENGRAVED_LABEL align 10
+          }
+          Fl_Button savePlotsToAGR {
+            label {Save plots to .agr}
+            callback {std::string fName = std::string(filename->value());
+plotWin->savePlotsToAGR(fName);}
+            xywh {30 635 150 30} color 44
+          }
+        }
+      }
+    }
+    code {plotWin->initialize(datafile, useExistingOptFile, optfile, useThreshold, threshold, selectedSegmentText);} {}
+  }
+  Function {show(int argc, char **argv)} {open
+  } {
+    code {mainWin->show(argc, argv);} {}
+  }
+} 

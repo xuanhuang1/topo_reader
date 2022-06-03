@@ -1,0 +1,14 @@
+Files we saw:
+=============
+
+in topologyfilepaser svn:
+(1) FileElement.h - basic abstract class for stuff you want to write out
+(2) FileHandle.h - base node for xml 
+(3) DataHandle.h - overloaded file handle that can store an array of crap
+	- AttributeHandle and SimplificationHandle are instances of this
+(4) SimplificationHandle.h - clan-family-simplificationhandle-> a particular simplificaiton sequence
+	- indexes, birth-death stuff, hierarchy, etc.
+(5) FeatureHierarchy.h - general implementation of a hierarchy - not related - simply to read in and deal with the file format - right now reads in simplificationhandle.h - but will probably also deal with statistics - vaidy for vis and janine for statistics in downstream tools
+
+in streamingtopology:
+(6)  FeatureFamily.h - EXAMPLE OF USING FILE FORMAT WITH MERGE TREE CODE

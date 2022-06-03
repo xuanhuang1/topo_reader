@@ -1,0 +1,25 @@
+#START
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SUPPORTED TYPES OF WIDGETS:
+% SLIDER SYNTAX : {SLIDER (BOB1, -10:30, s=0.2, i=20.0)}
+% FLAG SYNTAX   : {FLAG, ACOLLECT1,  i=0}
+% MULTI SYNTAX  : {MULTI, ACOLLECT4, A,B,C,D,E,F,i=0}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+{FLAG, ACOLLECT1,i=0}
+{MULTI, Janine, A,B,C,D,E,F,i=2}
+{FLAG, ACOLLECT5,i=1}
+{FLAG, ACOLLECT2,i=0}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%SLIDERS SYNTAX: (XXX, -10:30, s=0.2, i=00.0)    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+{SLIDER (VALERIO, -10:30, s=0.2, i=20.0)}
+{MULTI, ACOLLECT8, A,B,C,D,E,F,i=4}
+{SLIDER (BOB1, -10:30, s=0.2, i=20.0)}
+{SLIDER (BOB2, -10:30, s=0.2, i=20.0)}
+{SLIDER (BOB3, -10:30, s=0.2, i=20.0)}
+{SLIDER (BOB4, -10:30, s=0.2, i=20.0)}
+{SLIDER (BOB5, -10:30, s=0.2, i=20.0)}
+{SLIDER (BOB6, -10:30, s=0.2, i=20.0)}
+{SLIDER (BOB7, -10:30, s=0.2, i=20.0)}
+{FLAG, PROVA, i=0}
+#END

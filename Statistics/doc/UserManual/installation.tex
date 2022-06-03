@@ -1,0 +1,194 @@
+\section{Installation} \label{sec:installation}
+
+At the time of writing this document, there are three software 
+components that have been developed to analyze and visualize feature families.  
+These include a Statistics browser, a Merge Tree viewer, and a Segmentation
+viewer.  All three of these codes rely on the TopologyFileParser library.  The Segmentation
+viewer relies on the FlexArray library as well as the RenderUtility library(for high quality renderer).
+
+
+The code can be checked out from SCI's svn repository: 
+
+\small{
+\begin{description}
+\item[Topology File Parser Library:]https://gforge.sci.utah.edu/svn/dar/topology/TopologyFileParser
+
+\item[Flex Array Library:]https://gforge.sci.utah.edu/svn/dar/topology/FlexArray
+
+\item[Render Utility Library:]https://gforge.sci.utah.edu/svn/dar/renderUtility
+
+\item[Segmentation Viewer:]https://gforge.sci.utah.edu/svn/dar/topology/SegViewer (low quality rendering)
+
+\item[Segmentation Viewer:]https://gforge.sci.utah.edu/svn/dar/topology/SegViewer/VolRender (high quality rendering)
+
+\item[Merge Tree Viewer:]https://gforge.sci.utah.edu/svn/dar/topology/TrackingGraph
+
+\item[Statistics Browser:]https://gforge.sci.utah.edu/svn/dar/topology/Statistics
+\end{description}
+}
+
+All of the code is meant to be installed in an ``out of source'' manner using CMake, see the
+CMake home page at \url{http://cmake.org} for details on the CMake system.  
+
+\paragraph{Flex Array Library} 
+This library is required by the Segmentation Viewer and provides flexible array functionality, 
+including an out of core implemenation.  To install, create your build directory and from there
+type:
+
+\texttt{\% ccmake /path/to/source}
+
+to generate the necessary makefiles. Once you have exited \texttt{ccmake}, type 
+
+\texttt{\% make}\\
+\texttt{\% make install}
+
+to build and install this library.
+
+
+\paragraph{Topology File Parser Library} 
+This library implements the topology file format and is required by all three software 
+components.  To install, create your build directory and from there type:
+
+\texttt{\% ccmake /path/to/source}
+
+to generate the necessary makefiles. Once you have exited \texttt{ccmake}, type 
+
+\texttt{\% make}\\
+\texttt{\% make install}
+
+to build and install this library.
+
+\paragraph{Render Utility Library} 
+This library implements the rendering helper functions and is required by the high quality version of the SegViewer tool.
+To install, create your build directory and from there type:
+
+\texttt{\% ccmake /path/to/source}
+
+to generate the necessary makefiles. Once you have exited \texttt{ccmake}, type 
+
+\texttt{\% make}\\
+\texttt{\% make install}
+
+to build and install this library.
+
+\paragraph{Segmentation Viewer (Low quality renderer - for older machines)} 
+The Segmentation viewer is a software component that visualizes the feature segmentation.
+To install, create your build directory and from there type:
+
+\texttt{\% ccmake /path/to/source}
+
+to generate the necessary makefiles. 
+
+You will need to modify the 
+\texttt{FLEXARRAY\_INCLUDE\_DIR} and \texttt{FLEXARRAY\_LIBRARIES} variables to point
+to your installation of the FlexArray include directory and library respectively.
+You will also need to modify the \texttt{TOPOLOGY\_FILE\_PARSER\_INCLUDE\_DIR} and 
+\texttt{TOPOLOGY\_FILE\_PARSER\_LIBRARIES} variables to point to your installation of the 
+TopologyFileParser include directory and library respectively.
+
+This software component has a gui that relies on fltk2.  If you do not have this installed
+on your machine you can download it from \url{http://fltk.org}.  You may need to modify the associated 
+\texttt{FLTK2} variables to point your installation of fltk2.
+
+This software component also relies on GLEW.  If you do not have this installed
+on your machine you can download it from \url{http://glew.sourceforge.net/}.  You may need to 
+modify the associated \texttt{GLEW} variables to point your installation of GLEW.
+
+Once you have exited \texttt{ccmake}, type 
+
+\texttt{\% make}\\
+\texttt{\% make install}
+
+to build and install this library.
+ 
+\paragraph{Segmentation Viewer (High quality renderer - for newer machines)} 
+This version requires a high end GPU. Preferrably of Fermi class (nVidia GTX460 or better).
+
+\texttt{\% ccmake /path/to/source}
+
+to generate the necessary makefiles. 
+
+You will need to modify the 
+\texttt{FLEXARRAY\_INCLUDE\_DIR} and \texttt{FLEXARRAY\_LIBRARIES} variables to point
+to your installation of the FlexArray include directory and library respectively.
+You will also need to modify the \texttt{TOPOLOGY\_FILE\_PARSER\_INCLUDE\_DIR} and 
+\texttt{TOPOLOGY\_FILE\_PARSER\_LIBRARIES} variables to point to your installation of the 
+TopologyFileParser include directory and library respectively.
+
+This software component has a gui that relies on fltk2.  If you do not have this installed
+on your machine you can download it from \url{http://fltk.org}.  You may need to modify the associated 
+\texttt{FLTK2} variables to point your installation of fltk2.
+
+This software component also relies on GLEW.  If you do not have this installed
+on your machine you can download it from \url{http://glew.sourceforge.net/}.  You may need to 
+modify the associated \texttt{GLEW} variables to point your installation of GLEW.
+
+This tool also depends on the RenderUtility library. You will need to modify
+\texttt{RENDERUTILITY\_INCLUDE\_DIR} and 
+\texttt{RENDERUTILITY\_LIBRARIES} variables to point to your installation of the 
+RenderUtility include directory and library respectively.
+
+Once you have exited \texttt{ccmake}, type 
+
+\texttt{\% make}\\
+\texttt{\% make install}
+
+to build and install this library.
+
+
+\paragraph{Merge Tree Viewer} 
+The Merge Tree viewer displays a merge tree as a branch decomposition.  
+To install, create your build directory and from there type:
+
+\texttt{\% ccmake /path/to/source}
+
+to generate the necessary makefiles. 
+
+You will need to modify the \texttt{TOPOLOGY\_FILE\_PARSER\_INCLUDE\_DIR} and \texttt{TOPOLOGY\_FILE\_PARSER\_LIBRARIES} 
+variables to point to your installation of the TopologyFileParser include directory and 
+library respectively.
+
+This software component has a gui that relies on fltk2.  If you do not have this installed
+on your machine you can download it from \url{http://fltk.org}.  You may need to modify the associated 
+\texttt{FLTK2} variables to point your installation of fltk2.
+
+Once you have exited \texttt{ccmake}, type 
+
+\texttt{\% make}\\
+\texttt{\% make install}
+
+to build and install this library.
+
+
+\paragraph{Statistics Browser} 
+The Statistics Browser displays plots including species distribution plots, time plots and 
+parameter plots (described in section \ref{sec:featureFamilyProcessing}. Sliders are provided
+so that the user can subselect the features according to various criterion.
+
+To install, create your build directory and from there type:
+
+\texttt{\% ccmake /path/to/source}
+
+to generate the necessary makefiles. 
+
+You will need to modify the 
+\texttt{TOPOLOGY\_FILE\_PARSER\_INCLUDE\_DIR} and \texttt{TOPOLOGY\_FILE\_PARSER\_LIBRARIES} 
+variables to point to your installation of the TopologyFileParser include directory and 
+library respectively.
+
+This software component has a gui that relies on the stable release of fltk (at the time of writing this
+is 1.1.10).  If you do not have this installed on your machine you can download it from 
+\url{http://fltk.org}.  You may need to modify the associated \texttt{FLTK} variables to point your installation of fltk.
+
+This software component also uses the FreeType2 and FTGL libraries for display of fonts and text.  If you do not have
+these installed on your machine, you can download them from \url{http://freetype.sourceforge.net/download.html} 
+and \url{http://sourceforge.net/projects/ftgl/}.  You may need to modify the associated \texttt{FREETYPE2} 
+and \texttt{FTGL} variables to point to your installation of FreeType2 and FTGL respectively.
+
+Once you have exited \texttt{ccmake}, type 
+
+\texttt{\% make}\\
+\texttt{\% make install}
+
+to build and install this library.
+

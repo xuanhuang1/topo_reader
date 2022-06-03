@@ -1,0 +1,121 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[ps2pdf,12pt,jpg]{SANDreport}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PDF output?
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+  \pdffalse
+\else
+  \pdfoutput=1
+  \pdftrue
+\fi
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{pslatex}
+\usepackage{float}
+\usepackage{subfigure}
+\usepackage{stmaryrd}
+\setlength{\parindent}{0pt}
+\ifpdf
+  \RequirePackage[pdftex, colorlinks=true, pdfstartview=FitH, linkcolor=blue, citecolor=blue, urlcolor=blue]{hyperref}
+  \pdfinfo{
+  /Title    (Feature family analysis: an installation guide and user manual)
+  /Author   (Janine Bennett, Peer-Timo Bremer, Vaidyanathan Krishnamoorthy, and Valerio Pascucci)
+  /Keywords ()
+  }
+\else
+  \RequirePackage{hyperref}
+\fi
+\input{SANDmath}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newfloat{listing}{htbp}{lst}
+\floatname{listing}{\bfseries Listing}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\Betti}{\beta}
+\newcommand{\rBetti}{\tilde{\beta}}
+\def\Rspace{\mathbb{R}} % ptb
+\def\Aspace{\mathbb{A}} % ptb
+\def\Nspace{\mathbb{N}} % ptb
+\def\Mspace{\mathbb{M}} % ptb
+\def\Fspace{\mathbb{F}} % ptb
+\def\Cspace{\mathcal{F}} % ptb
+\def\Pset{\mathcal{P}} % ptb
+\newtheorem{definition}{Definition}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\graphicspath{{./pdf/}{./png/}{./jpeg/}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{Feature family analysis: an installation guide and user manual}
+\author{Janine Bennett\\
+        Sandia National Laboratories\\
+        \texttt{jcbenne@sandia.gov}
+	\and
+        Peer-Timo Bremer\\
+        Lawrence Livermore National Laboratory\\
+        University of Utah\\
+        \texttt{bremer5@llnl.gov}
+	\and
+	      Vaidyanathan Krishnamoorthy\\
+        University of Utah\\
+        \texttt{vaidy@cs.utah.edu}
+	\and
+	      Valerio Pascucci\\
+        University of Utah\\
+        \texttt{pascucci@sci.utah.edu}
+}
+
+\date{}
+\SANDnum{SAND2011-XXXX}
+\SANDprintDate{January 2011}
+\SANDauthor{Janine Bennett, Peer-Timo Bremer, Vaidyanathan Krishnamoorthy, and Valerio Pascucci}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\maketitle
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{abstract}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\section*{Acknowledgments}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\tableofcontents
+%\listoffigures
+%\listoftables
+\newpage
+\hfill
+\vfill
+\begin{center}
+This page intentionally left blank
+\end{center}
+\vfill
+\cleardoublepage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\arraystretch{2}
+\SANDmain
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{introduction}
+%\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{featureFamilyProcessing}
+%\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{topologyFileFormat}
+%\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{installation}
+%\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{usage}
+%\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\nocite{*}
+\bibliographystyle{alpha}
+\bibliography{SAND2011-UserManual}
+\addcontentsline{toc}{section}{References}
+%\printindex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\include{SANDdistribution}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -1,0 +1,43 @@
+cmake_minimum_required(VERSION 2.6)
+
+SET(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../CMake-Modules ${CMAKE_MODULE_PATH})
+INCLUDE(TalassSetup)
+
+TALASS_PROJECT(TopologyFileParser)
+
+
+include(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+SET (CMAKE_CXX_STANDARD 11)
+
+INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/config/TALASSConfig.cmake)
+
+IF (TALASS_USE_OPENMP)
+   FIND_PACKAGE(OpenMP)
+   IF (OPENMP_FOUND)
+      SET (HAVE_OPENMP 1)
+      SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+      SET (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+   ENDIF()
+ENDIF()
+
+IF (TALASS_ENABLE_VTK)
+    FIND_PACKAGE(VTK COMPONENTS vtkCommonDataModel vtkFiltersCore NO_MODULE)
+    INCLUDE(${VTK_USE_FILE})
+ENDIF()
+        
+ADD_SUBDIRECTORY(src)
+ADD_SUBDIRECTORY(utilities)
+
+INSTALL(EXPORT TopoFileParser
+        NAMESPACE TopoFileParser::
+        DESTINATION lib/cmake
+)
+
+INSTALL(FILES TopoFileParserConfig.cmake
+        DESTINATION lib/cmake
+)
+
+INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/TalassConfig.h
+	DESTINATION include
+)

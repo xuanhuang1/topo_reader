@@ -14,6 +14,7 @@
 #include "StatHandle.h"
 #include "StatKey.h"
 //#include "AggregatorFactory.h"
+#include <limits>
 
 namespace TopologyFileFormat{
 
